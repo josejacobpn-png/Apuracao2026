@@ -1,5 +1,5 @@
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } from 'recharts';
-import { LayoutDashboard, FileText, Calendar, Filter, ArrowLeft } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { LayoutDashboard, FileText, Calendar, ArrowLeft } from 'lucide-react';
 import './Dashboard.css';
 
 interface Resultado {

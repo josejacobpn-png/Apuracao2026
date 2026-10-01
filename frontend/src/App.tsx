@@ -78,7 +78,7 @@ function App() {
     }
   };
 
-  const onScanFailure = (error: any) => {
+  const onScanFailure = () => {
     // Ignore as it will fail constantly when no QR code is in front of the camera
   };
 
