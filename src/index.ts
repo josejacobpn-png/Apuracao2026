@@ -87,12 +87,16 @@ app.get('/resultados', async (req, res) => {
         // Para uma aplicação real de apuração, o ideal é criar uma "View" no Supabase e consumi-la, ou usar uma Stored Procedure (RPC).
         // Aqui faremos a chamada a uma view imaginária chamada "resumo_votos".
         
+        const { count: buCount, error: buError } = await supabase
+            .from('boletins_urna')
+            .select('*', { count: 'exact', head: true });
+
         const { data, error } = await supabase
             .from('votos')
             .select('cargo, candidato, quantidade');
 
-        if (error) {
-            throw error;
+        if (error || buError) {
+            throw error || buError;
         }
 
         // Agrupamento manual no backend para simplificar o exemplo sem precisar criar RPC no Supabase
@@ -115,7 +119,10 @@ app.get('/resultados', async (req, res) => {
             return b.total_votos - a.total_votos;
         });
 
-        res.json(result);
+        res.json({
+            secoes_apuradas: buCount || 0,
+            votos: result
+        });
     } catch (err) {
         console.error('Erro ao consultar resultados:', err);
         res.status(500).json({ error: 'Erro ao consultar resultados.' });

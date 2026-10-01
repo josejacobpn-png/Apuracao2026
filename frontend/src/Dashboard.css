@@ -1,0 +1,259 @@
+.dash-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(135deg, #7c93a0 0%, #a4b3be 50%, #7c93a0 100%);
+  color: #fff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden;
+}
+
+.dash-sidebar {
+  width: 120px;
+  background-color: #051024;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 0;
+  border-right: 2px solid #f1c40f;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+  z-index: 10;
+}
+
+.dash-logo {
+  color: #fff;
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  font-weight: bold;
+}
+
+.dash-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  align-items: center;
+}
+
+.dash-btn-nav {
+  background: transparent;
+  border: 1px solid #f1c40f;
+  border-radius: 12px;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: bold;
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.dash-btn-nav:hover, .dash-btn-nav.active {
+  border-color: #f1c40f;
+  box-shadow: 0 0 10px rgba(241, 196, 15, 0.5);
+}
+
+.dash-icon-box {
+  background: #1a2c4e;
+  width: 100%;
+  height: 60%;
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.2rem;
+}
+
+.dash-icon-box.yellow {
+  background: #f1c40f;
+}
+
+.dash-filter-section {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  gap: 0.5rem;
+}
+
+.dash-btn-filter {
+  background: #0a1931;
+  color: #fff;
+  border: 1px solid #34495e;
+  border-radius: 4px;
+  padding: 0.4rem;
+  font-size: 0.7rem;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+}
+
+.dash-checkbox {
+  font-size: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dash-main {
+  flex: 1;
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.dash-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.dash-back-btn {
+  background: #0a1931;
+  border: none;
+  color: white;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.dash-back-btn:hover {
+  background: #f1c40f;
+  color: #0a1931;
+}
+
+.dash-header h1 {
+  font-size: 1.8rem;
+  margin: 0;
+  font-weight: 600;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+}
+
+.dash-top-filters {
+  display: flex;
+  background: #0a1931;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+.dash-top-filter-label {
+  padding: 0.6rem 1rem;
+  background: #0a1931;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: bold;
+  border-right: 1px solid #1a2c4e;
+}
+
+.dash-tabs {
+  display: flex;
+}
+
+.dash-tab {
+  background: #fff;
+  color: #333;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  border-right: 1px solid #ccc;
+}
+
+.dash-tab.active {
+  background: #f8f9fa;
+}
+
+.dash-tab.dark {
+  background: #333;
+  color: #fff;
+  border: none;
+}
+
+.dash-kpis {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.dash-kpi-card {
+  background: #0a1931;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.dash-kpi-value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #f1c40f;
+}
+
+.dash-kpi-label {
+  color: #a0aabf;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+.dash-grid-6 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  flex: 1;
+}
+
+.dash-card {
+  background: #0a1931;
+  border-radius: 12px;
+  padding: 1.2rem;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+}
+
+.dash-card h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.dash-legend {
+  font-size: 0.7rem;
+  color: #a0aabf;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot.yellow {
+  background: #f1c40f;
+}
+
+.chart-wrapper {
+  flex: 1;
+  min-height: 200px;
+}
