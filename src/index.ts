@@ -80,6 +80,64 @@ app.post('/upload-bu', upload.single('bu_image'), async (req, res) => {
     }
 });
 
+// Endpoint para receber o BU já como texto lido pela câmera do navegador
+app.post('/upload-bu-text', async (req, res) => {
+    try {
+        const buData = req.body.buData;
+
+        if (!buData || !buData.zona) {
+            return res.status(422).json({ error: 'Dados inválidos do QR Code.' });
+        }
+
+        // Armazenar os dados no banco de dados via Supabase
+        
+        // 1. Inserir o Boletim de Urna
+        const { data: buInsertRes, error: buError } = await supabase
+            .from('boletins_urna')
+            .insert([{
+                zona: buData.zona,
+                secao: buData.secao,
+                municipio: buData.municipio
+            }])
+            .select()
+            .single();
+
+        if (buError) {
+            console.error('Erro ao inserir BU:', buError);
+            return res.status(500).json({ error: 'Erro ao salvar o Boletim de Urna no banco.' });
+        }
+
+        const buId = buInsertRes.id;
+
+        // 2. Inserir os votos
+        const votosToInsert = buData.votos.map((voto: any) => ({
+            boletim_urna_id: buId,
+            cargo: voto.cargo,
+            candidato: voto.candidato,
+            quantidade: voto.quantidade
+        }));
+
+        const { error: votosError } = await supabase
+            .from('votos')
+            .insert(votosToInsert);
+
+        if (votosError) {
+            console.error('Erro ao inserir votos:', votosError);
+            await supabase.from('boletins_urna').delete().eq('id', buId);
+            return res.status(500).json({ error: 'Erro ao salvar os votos no banco de dados.' });
+        }
+            
+        res.status(200).json({
+            message: 'BU lido e armazenado com sucesso!',
+            data: buData
+        });
+
+    } catch (err) {
+        console.error('Erro interno:', err);
+        res.status(500).json({ error: 'Erro interno no servidor.' });
+    }
+});
+
 app.get('/resultados', async (req, res) => {
     try {
         // Agrupar e somar os votos

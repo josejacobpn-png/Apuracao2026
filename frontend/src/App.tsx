@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowRight, QrCode, Upload, CheckCircle, AlertCircle, Loader2, BarChart2 } from 'lucide-react';
+import { ArrowRight, QrCode, Upload, CheckCircle, AlertCircle, Loader2, BarChart2, Camera } from 'lucide-react';
+import { Html5QrcodeScanner } from 'html5-qrcode';
 import './index.css';
 import Dashboard from './Dashboard';
 
@@ -13,10 +14,73 @@ function App() {
   const [username, setUsername] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [viewMode, setViewMode] = useState<'upload' | 'results'>('upload');
+  const [showLiveScanner, setShowLiveScanner] = useState(false);
   const [resultados, setResultados] = useState<{ secoes_apuradas: number, votos: Resultado[] }>({ secoes_apuradas: 0, votos: [] });
   const [loadingResultados, setLoadingResultados] = useState(false);
   const [status, setStatus] = useState<{ type: 'idle' | 'loading' | 'success' | 'error', message?: string }>({ type: 'idle' });
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+
+  useEffect(() => {
+    if (showLiveScanner) {
+      scannerRef.current = new Html5QrcodeScanner(
+        "qr-reader",
+        { fps: 10, qrbox: {width: 250, height: 250}, aspectRatio: 1.0 },
+        /* verbose= */ false
+      );
+      scannerRef.current.render(onScanSuccess, onScanFailure);
+    } else {
+      if (scannerRef.current) {
+        scannerRef.current.clear().catch(error => {
+          console.error("Failed to clear html5QrcodeScanner. ", error);
+        });
+        scannerRef.current = null;
+      }
+    }
+
+    return () => {
+      if (scannerRef.current) {
+        scannerRef.current.clear().catch(error => {
+          console.error("Failed to clear html5QrcodeScanner on unmount. ", error);
+        });
+      }
+    };
+  }, [showLiveScanner]);
+
+  const onScanSuccess = async (decodedText: string) => {
+    // Parar o scanner assim que ler
+    setShowLiveScanner(false);
+    setStatus({ type: 'loading' });
+
+    try {
+      const buData = JSON.parse(decodedText);
+      const response = await fetch('http://localhost:3000/upload-bu-text', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ buData }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setStatus({ type: 'success', message: 'Boletim de Urna lido com sucesso! Encerrando sessão...' });
+        setTimeout(() => {
+          setIsLoggedIn(false);
+          setUsername('');
+          setStatus({ type: 'idle' });
+        }, 3000);
+      } else {
+        setStatus({ type: 'error', message: data.error || 'Erro ao processar BU.' });
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus({ type: 'error', message: 'Erro ao processar o QR Code. Formato inválido ou erro no servidor.' });
+    }
+  };
+
+  const onScanFailure = (error: any) => {
+    // Ignore as it will fail constantly when no QR code is in front of the camera
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -140,15 +204,29 @@ function App() {
 
             {viewMode === 'upload' ? (
               <>
-                <div className="scanner-area" onClick={triggerFileInput}>
-                  <QrCode size={48} className="scanner-icon" />
-                  <p style={{ color: 'var(--text-secondary)' }}>
-                    Clique aqui para ler o QR Code ou <br/>fazer upload da imagem do BU
-                  </p>
-                  <button type="button" className="btn" style={{ width: 'auto', padding: '0.75rem 1.5rem', marginTop: '0.5rem' }}>
-                    <Upload size={18} /> Selecionar Arquivo
-                  </button>
-                </div>
+                {showLiveScanner ? (
+                  <div style={{ background: '#fff', borderRadius: '12px', overflow: 'hidden', padding: '1rem', marginBottom: '1rem' }}>
+                    <div id="qr-reader" style={{ width: '100%', maxWidth: '500px', margin: '0 auto', color: 'black' }}></div>
+                    <button type="button" className="btn" style={{ background: '#e74c3c', marginTop: '1rem' }} onClick={() => setShowLiveScanner(false)}>
+                      Cancelar Câmera
+                    </button>
+                  </div>
+                ) : (
+                  <div className="scanner-area">
+                    <QrCode size={48} className="scanner-icon" />
+                    <p style={{ color: 'var(--text-secondary)' }}>
+                      Como deseja realizar a leitura do BU?
+                    </p>
+                    <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+                      <button type="button" className="btn" style={{ width: 'auto', padding: '0.75rem 1.5rem', flex: 1, minWidth: '200px' }} onClick={() => setShowLiveScanner(true)}>
+                        <Camera size={18} /> Abrir Câmera ao Vivo
+                      </button>
+                      <button type="button" className="btn" style={{ width: 'auto', padding: '0.75rem 1.5rem', background: 'var(--bg-secondary)', flex: 1, minWidth: '200px' }} onClick={triggerFileInput}>
+                        <Upload size={18} /> Enviar Arquivo/Foto
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 <input 
                   type="file" 
